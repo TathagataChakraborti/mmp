@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
 # path to fast downward #
-FD_PATH="/home/ASUAD/tchakra2/Desktop/FAST-DOWNWARD/fast-downward.py"
+FD_PATH=$(locate fast-downward.py | head -n 1)
 
 # find optimal plan using fd on input domain and problem #
 rm -f output output.sas sas_plan

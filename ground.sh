@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
 # path to pr2plan #
-PR2PLAN_PATH="/home/ASUAD/tchakra2/Desktop/obs-compiler/pr2plan"
+PR2PLAN_PATH=$(locate pr2plan | head -n 1)
 
 # ground domain and problem input using pr2plan #
 rm -f *-domain.pddl *-problem.pddl obs.dat

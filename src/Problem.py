@@ -80,7 +80,7 @@ main method
 def main():
     
     parser = argparse.ArgumentParser(description = '''This is the Problem class. Explanations for Multi-Model Planning.''',
-                                     epilog      = '''Usage >> ./Problem.py -m test/fetchworld-tuck-m.pddl -n test/fetchworld-base-m.pddl -f test/problem1.pddl -p test/plan1.dat ''')
+                                     epilog      = '''Usage >> ./Problem.py -m ../domain/fetchworld-tuck-m.pddl -n ../domain/fetchworld-base-m.pddl -f ../domain/problem1.pddl ''')
      
     parser.add_argument('-m', '--model',   type=str, help="Domain file with real PDDL model of robot.")
     parser.add_argument('-n', '--nmodel',  type=str, help="Domain file with human model of the robot.")

@@ -14,7 +14,7 @@ import re, os
 Global :: global variables
 '''
 
-__DOMAIN_SOURCE__   = '../test/domain_template.pddl'
+__DOMAIN_SOURCE__   = '../domain/domain_template.pddl'
 
 __GROUND_CMD__      = "./ground.sh {} {} > stdout.txt"
 __FD_PLAN_CMD__     = "./fdplan.sh {} {}"

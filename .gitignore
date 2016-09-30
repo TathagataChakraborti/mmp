@@ -2,6 +2,7 @@
 output
 output.sas
 sas_plan
+temp.pddl
 *r-*.pddl
 obs.dat
 *.stats

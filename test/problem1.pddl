@@ -9,6 +9,8 @@
 	(block-at b1 loc1)
 	(robot-at loc2)
 	(hand-empty)
+	(hand-tucked)
+	(charged)
 )
 
 

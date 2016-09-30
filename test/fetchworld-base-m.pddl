@@ -32,4 +32,16 @@
   	 :effect 	(and (not (holding ?obj)) (not (hand-tucked)) (hand-empty) (block-at ?obj ?loc))
   	 )
 
+(:action tuck
+  	 :parameters	()
+  	 :precondition 	(and (not (hand-tucked)))
+  	 :effect 	(and (hand-tucked))
+  	 )
+
+(:action charge
+  	 :parameters	()
+  	 :precondition 	(and (not (charged)))
+  	 :effect 	(and (charged))
+  	 )
+
 )

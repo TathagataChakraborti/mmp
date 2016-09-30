@@ -38,4 +38,10 @@
   	 :effect 	(and (hand-tucked))
   	 )
 
+(:action charge
+  	 :parameters	()
+  	 :precondition 	(and (not (charged)))
+  	 :effect 	(and (charged))
+  	 )
+
 )

@@ -29,6 +29,7 @@ def astarSearch(problem):
         node = fringe.get()[1]
 
         if problem.isGoal(node[0]):
+            print "Goal Found! Number of Nodes Expanded =", numberOfNodesExpanded
             return node[1]
 
         if frozenset(node[0]) not in closed:
@@ -38,14 +39,14 @@ def astarSearch(problem):
             successor_list         = problem.getSuccessors(node)
             numberOfNodesExpanded += 1
 
-            if not numberOfNodesExpanded % 10:
-                print "Number of Nodes Expanded = ", numberOfNodesExpanded
+            if not numberOfNodesExpanded % 100:
+                print "Number of Nodes Expanded =", numberOfNodesExpanded
             
             while successor_list:
-
+                
                 candidate_node     = successor_list.pop()
                 new_node           = [candidate_node[0], node[1] + [candidate_node[1]]]
-
+                
                 fringe.put((problem.heuristic(candidate_node[0]) + len(new_node[1]), new_node))
 
     return None

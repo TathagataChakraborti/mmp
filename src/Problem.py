@@ -9,7 +9,7 @@ Date    :: 09/29/2016
 
 from PDDLhelp import *
 from Search   import astarSearch
-import copy, argparse, sys
+import copy, argparse, os, sys
 
 '''
 Class :: Environment Definition
@@ -20,10 +20,18 @@ class Problem:
     def __init__(self, robotModelFile, humanModelFile, problemFile, robotPlanFile = None):
 
         print "Setting up MMP..."
-        
-        if not robotPlanFile: self.plan, self.cost = get_plan(robotModelFile, problemFile)
+
+        if not robotPlanFile:
+
+            self.robotPlanFile   = '../domain/cache_plan.dat'
+            self.plan, self.cost = get_plan(robotModelFile, problemFile)
+
+            with open(self.robotPlanFile, 'w') as plan_file:
+                plan_file.write('\n'.join(['({})'.format(item) for item in self.plan]) + '\n; cost = {} (unit cost)'.format(self.cost))
+            
         else:
 
+            self.robotPlanFile   = robotPlanFile
             with open(robotPlanFile, 'r') as plan_file:
                 temp      = plan_file.read().strip().split('\n')
                 self.plan = temp[:-1]
@@ -36,19 +44,25 @@ class Problem:
 
         try:    self.initialState = read_state_from_domain_file('tr-domain.pddl')
         except: self.initialState = []
-            
+
+        
     def getStartState(self):
         return self.initialState
 
     def isGoal(self, state):
 
-        temp_domain = write_domain_file_from_state(state)
-        plan, cost  = get_plan(temp_domain, 'tr-problem.pddl')
+        temp_domain      = write_domain_file_from_state(state)
+        plan, cost       = get_plan(temp_domain, 'tr-problem.pddl')
+        optimality_flag  = cost == self.cost
+        
+        feasibility_flag = True #validate_plan(temp_domain, 'tr-problem.pddl', self.robotPlanFile)
+        
+        return optimality_flag and feasibility_flag
 
-        return cost == self.cost 
-
+    
     def heuristic(self, state):
         return 0.0
+
     
     def getSuccessors(self, node):
 
@@ -69,7 +83,7 @@ class Problem:
             new_state    = copy.deepcopy(state)
             new_state.remove(item)
             listOfSuccessors.append([list(new_state), item])
-        
+            
         return listOfSuccessors
         
 
@@ -87,16 +101,25 @@ def main():
     parser.add_argument('-f', '--problem', type=str, help="Problem file.")
     parser.add_argument('-p', '--plan',    type=str, help="Plan file.")
  
-    args             = parser.parse_args()
+    args   = parser.parse_args()
 
     if not sys.argv[1:]:
         print parser.print_help()
 
-    problem_instance = Problem(args.model, args.nmodel, args.problem, args.plan)
-    plan             = astarSearch(problem_instance)
+    else:
+        
+        problem_instance = Problem(args.model, args.nmodel, args.problem, args.plan)
+        exit()
+        plan             = astarSearch(problem_instance)
+        
+        explanation      = ''
+        for item in plan:
+            explanation += "Explanation >> {}\n".format(item)
 
-    for item in plan:
-        print 'Explanation >> ', item
+        print explanation.strip()
+        with open('exp.dat', 'w') as explanation_file:
+            explanation_file.write(explanation.strip())
+        
 
 if __name__ == '__main__':
     main()

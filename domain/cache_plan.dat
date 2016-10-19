@@ -1,0 +1,7 @@
+(move loc2 loc1)
+(charge)
+(pickup b1 loc1)
+(tuck)
+(move loc1 loc2)
+(putdown b1 loc2)
+; cost = 6 (unit cost)

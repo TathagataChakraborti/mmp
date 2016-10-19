@@ -5,6 +5,8 @@ sas_plan
 temp.pddl
 *r-*.pddl
 obs.dat
+exp.dat
+plan.dat
 *.stats
 stdout.txt
 *~

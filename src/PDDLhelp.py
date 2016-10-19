@@ -14,10 +14,11 @@ import re, os
 Global :: global variables
 '''
 
-__DOMAIN_SOURCE__   = '../domain/domain_template.pddl'
+__DOMAIN_SOURCE__ = '../domain/domain_template.pddl'
 
-__GROUND_CMD__      = "./ground.sh {} {} > stdout.txt"
-__FD_PLAN_CMD__     = "./fdplan.sh {} {}"
+__GROUND_CMD__    = "./ground.sh {} {} > stdout.txt"
+__FD_PLAN_CMD__   = "./fdplan.sh {} {}"
+__VAL_PLAN_CMD__  = "./validate.sh {} {} {}"
 
 
 '''
@@ -53,7 +54,7 @@ def write_domain_file_from_state(state):
                                      .format(key, '\n'.join(['( {} )'.format(p) for p in actionList[key]['precondition']]), \
                                              '{}\n{}'.format('\n'.join(['( {} )'.format(p) for p in actionList[key]['add-effect']]), \
                                                              '\n'.join(['(not ( {} ))'.format(p) for p in actionList[key]['delete-effect']]))) for key in actionList.keys()])
-
+        
         temp_domain_file.write(template_domain.format(predicateString, actionString))
 
     return temp_domainFileName
@@ -71,10 +72,12 @@ def read_state_from_domain_file(domainFileName):
 
         try:    preconditions  = {re.search('\(((?!not).*?)\)', item).group(1).strip() : not 'not ' in item \
                                   for item in re.findall('(\(not[\s+]*\(.*?\)[\s+]*\)|\(.*?\))', re.search(':precondition[\s+]*\(and(.*?)\)[\s+]*:', description).group(1))}
+
         except: preconditions  = {}
 
         try:    effects        = {re.search('\(((?!not).*?)\)', item).group(1).strip() : not 'not ' in item \
                                   for item in re.findall('(\(not[\s+]*\(.*?\)[\s+]*\)|\(.*?\))', re.search(':effect[\s+]*\(and(.*?)\)[\s+]*(\(:action|\)[\s+]*$)', description).group(1))}
+
         except: effects        = {}
             
         return [action_name, preconditions, effects]
@@ -122,5 +125,24 @@ Method :: ground PDDL domain and problem files
 
 def ground(domainFileName, problemFileName):
 
-    os.system('./clean.sh')
-    os.system(__GROUND_CMD__.format(domainFileName, problemFileName))
+    output = os.system('./clean.sh')
+    output = os.system(__GROUND_CMD__.format(domainFileName, problemFileName))
+
+
+''' 
+Method :: validate plan given PDDL domain and problem files
+'''
+
+def validate_plan(domainFileName, problemFileName, planFileName):
+
+    output = os.system(__VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName))
+    return eval(output)
+
+
+if __name__ == '__main__':
+    pass
+
+    ''' debug list '''
+    #print validate_plan('../domain/fetchworld-base-m.pddl', '../domain/problem1.pddl', 'sas_plan')
+    #state = read_state_from_domain_file('../domain/fetchworld-base-m.pddl')
+    #write_domain_file_from_state(state)

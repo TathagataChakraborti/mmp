@@ -17,3 +17,7 @@ Explanation >> CHARGE-has-add-effect-CHARGED
 ### Fetch needs to charge after move, pickup, putdown actions
 >> \>> ./Problem.py -m ../domain/fetchworld-charge-lg-m.pddl -n ../domain/fetchworld-base-m.pddl -f ../domain/problem1.pddl  
 Number of Nodes Expanded = 
+
+# New grounder (derived from pyperplan parts https://bitbucket.org/malte/pyperplan)
+python3  grounder_interface.py original_domain_file.pddl original_problem_file.pddl grounded_domain_file grounded_problem_file
+

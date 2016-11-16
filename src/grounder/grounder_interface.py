@@ -7,7 +7,7 @@ import sys
 DOM_TEMPL = "templ_domain.pddl"
 PROB_TEMPL = "templ_problem.pddl"
 PRED_TEMPL = "%PREDS%"
-ACTION_TEMPL = "(:action %NAME%"+ "\n" +":parameters ()"+"\n"+":precondition\n(and %PRECONDS%)\n:effect\n(and %POS_EFFECTS% %DEL_EFFECTS%))"
+ACTION_TEMPL = "\t(:action %NAME%"+ "\n\t\t" +":parameters ()"+"\n\t\t"+":precondition\n\t\t(and \n\t\t\t%PRECONDS%)\n\t\t:effect\n\t\t(and \n\t\t\t%POS_EFFECTS%%DEL_EFFECTS%\n\t\t)\n\t)"
 INIT_TEMPL = "%INIT%"
 GOAL_TEMPL = "%GOAL%"
 
@@ -38,14 +38,15 @@ class GROUNDER_INTERFACE(object):
        domain = self.domain_template.replace(PRED_TEMPL, '\n'.join(self.de_parameterizer((self.task.facts))))
        action_string = ""
        for i in range(len(self.task.operators)):
-           tmp_str = ACTION_TEMPL.replace('%NAME%', '_'.join(self.task.operators[i].name.split(' ')))
-           tmp_str = tmp_str.replace('%PRECONDS%', '\n'.join(self.de_parameterizer(self.task.operators[i].preconditions)))
-           tmp_str = tmp_str.replace('%POS_EFFECTS%','\n'.join(self.de_parameterizer(self.task.operators[i].add_effects)))
-           del_str = ''
-           for n in self.de_parameterizer(self.task.operators[i].del_effects):
-               del_str += '\n(not '+n+')'
-           tmp_str = tmp_str.replace('%DEL_EFFECTS%',del_str)
-           action_string += "\n" + tmp_str
+           if len(self.task.operators[i].add_effects) > 0 or len(self.task.operators[i].del_effects) > 0:
+               tmp_str = ACTION_TEMPL.replace('%NAME%', '_'.join(self.task.operators[i].name.replace('(','').replace(')','').split(' ')))
+               tmp_str = tmp_str.replace('%PRECONDS%', '\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].preconditions)))
+               tmp_str = tmp_str.replace('%POS_EFFECTS%','\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].add_effects)))
+               del_str = ''
+               for n in self.de_parameterizer(self.task.operators[i].del_effects):
+                   del_str += '\n\t\t\t(not '+n+')'
+               tmp_str = tmp_str.replace('%DEL_EFFECTS%',del_str)
+               action_string += "\n" + tmp_str
        domain = domain.replace('%OPERATORS%',action_string)
        with open(target_domain_file,'w') as d_fd:
            d_fd.write(domain)

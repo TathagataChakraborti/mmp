@@ -23,7 +23,7 @@ class Problem:
 
         if not robotPlanFile:
 
-            self.robotPlanFile   = '../domain/cache_plan.dat'
+            self.robotPlanFile   = '../../domain/cache_plan.dat'
             self.plan, self.cost = get_plan(robotModelFile, problemFile)
 
             with open(self.robotPlanFile, 'w') as plan_file:
@@ -37,10 +37,14 @@ class Problem:
                 self.plan = temp[:-1]
                 self.cost = int(temp[-1].split(' ')[3].strip())
             
+
+
         ground(robotModelFile, problemFile)
 
-        self.groundedRobotPlanFile   = '../domain/cache_grounded_plan.dat'
+        self.groundedRobotPlanFile   = '../../domain/cache_grounded_plan.dat'
         grounded_plan, grounded_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
+        self.grounded_robot_plan = set([i for i in grounded_plan])
+
         with open(self.groundedRobotPlanFile, 'w') as plan_file:
             plan_file.write('\n'.join(['({})'.format(item) for item in grounded_plan]) + '\n; cost = {} (unit cost)'.format(self.cost))
 
@@ -48,10 +52,10 @@ class Problem:
         self.ground_state = read_state_from_domain_file('tr-domain.pddl')
         
         ground(humanModelFile, problemFile)
+#        self.grounded_human_plan, human_grounded_plan_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
 
         try:    self.initialState = read_state_from_domain_file('tr-domain.pddl')
         except: self.initialState = []
-
         
     def getStartState(self):
         return self.initialState
@@ -63,23 +67,25 @@ class Problem:
         optimality_flag  = cost == self.cost
         
         feasibility_flag = validate_plan(temp_domain, 'tr-problem.pddl', self.groundedRobotPlanFile)
-        return optimality_flag and feasibility_flag
+        return (optimality_flag and feasibility_flag, plan)
 
     
     def heuristic(self, state):
         return 0.0
 
     
-    def getSuccessors(self, node):
+    def getSuccessors(self, node, old_plan):
 
         listOfSuccessors = []
 
         state            = set(node[0])
+
         ground_state     = set(self.ground_state)
+
+        all_relevent_actions = set([i.lower() for i in old_plan]) | self.grounded_robot_plan
 
         add_set          = ground_state.difference(state)
         del_set          = state.difference(ground_state)
-
         for item in add_set:
             new_state    = copy.deepcopy(state)
             new_state.add(item)

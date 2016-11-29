@@ -7,7 +7,7 @@
 rm -f *-domain.pddl *-problem.pddl obs.dat
 touch obs.dat
 #$PR2PLAN_PATH -d $1 -i $2 -o ./obs.dat > stdout.txt
-python3 ./grounder/grounder_interface.py $1  $2 ./pr-domain.pddl ./pr-problem.pddl
+python3 ../grounder/grounder_interface.py $1  $2 ./pr-domain.pddl ./pr-problem.pddl
 # post-process grounded domain and problem files #
 cat pr-domain.pddl | grep -vE "(EXPLAIN|increase|functions)" > tr-domain.pddl
 cat pr-problem.pddl | grep -vE "(EXPLAIN|increase|metric)" > tr-problem.pddl

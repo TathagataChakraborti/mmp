@@ -3,6 +3,7 @@ import copy
 from pddl.parser import Parser
 import grounding
 import sys
+from Plan_Graph_Generator import PLanGraphGenerator
 
 DOM_TEMPL = "templ_domain.pddl"
 PROB_TEMPL = "templ_problem.pddl"
@@ -39,14 +40,14 @@ class GROUNDER_INTERFACE(object):
        action_string = ""
        for i in range(len(self.task.operators)):
            if len(self.task.operators[i].add_effects) > 0 or len(self.task.operators[i].del_effects) > 0:
-               tmp_str = ACTION_TEMPL.replace('%NAME%', '_'.join(self.task.operators[i].name.replace('(','').replace(')','').split(' ')))
-               tmp_str = tmp_str.replace('%PRECONDS%', '\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].preconditions)))
-               tmp_str = tmp_str.replace('%POS_EFFECTS%','\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].add_effects)))
-               del_str = ''
-               for n in self.de_parameterizer(self.task.operators[i].del_effects):
-                   del_str += '\n\t\t\t(not '+n+')'
-               tmp_str = tmp_str.replace('%DEL_EFFECTS%',del_str)
-               action_string += "\n" + tmp_str
+                tmp_str = ACTION_TEMPL.replace('%NAME%', '_'.join(self.task.operators[i].name.replace('(','').replace(')','').split(' ')))
+                tmp_str = tmp_str.replace('%PRECONDS%', '\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].preconditions)))
+                tmp_str = tmp_str.replace('%POS_EFFECTS%','\n\t\t\t'.join(self.de_parameterizer(self.task.operators[i].add_effects)))
+                del_str = ''
+                for n in self.de_parameterizer(self.task.operators[i].del_effects):
+                    del_str += '\n\t\t\t(not '+n+')'
+                tmp_str = tmp_str.replace('%DEL_EFFECTS%',del_str)
+                action_string += "\n" + tmp_str
        domain = domain.replace('%OPERATORS%',action_string)
        with open(target_domain_file,'w') as d_fd:
            d_fd.write(domain)
@@ -55,11 +56,29 @@ class GROUNDER_INTERFACE(object):
        with open(target_problem_file,'w') as p_fd:
            p_fd.write(problem)
 
+    def run_pg_test(self, plan):
+        operator_map = {}
+        for op in self.task.operators:
+            operator_map[op.name] = op
+        pg = PLanGraphGenerator(self.task, plan, operator_map)
+        if pg.perform_fault_check():
+            print ("True")
+        else:
+            print ("False")
+
 
 if __name__ == '__main__':
     domain_file = sys.argv[1]
     problem_file = sys.argv[2]
-    target_domain_file = sys.argv[3]
-    target_problem_file = sys.argv[4]
     gi = GROUNDER_INTERFACE(domain_file, problem_file)
-    gi.write_to_file(target_domain_file, target_problem_file)
+    if sys.argv[3] == "Test":
+        plan = []
+        with open(sys.argv[4]) as p_fd:
+            for action in p_fd.readlines():
+                if action[0] != ';':
+                    plan.append(action.strip())
+            gi.run_pg_test(plan)
+    else:
+        target_domain_file = sys.argv[3]
+        target_problem_file = sys.argv[4]
+        gi.write_to_file(target_domain_file, target_problem_file)

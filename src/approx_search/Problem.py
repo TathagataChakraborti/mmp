@@ -23,7 +23,7 @@ class Problem:
 
         if not robotPlanFile:
 
-            self.robotPlanFile   = '../domain/cache_plan.dat'
+            self.robotPlanFile   = '../../domain/cache_plan.dat'
             self.plan, self.cost = get_plan(robotModelFile, problemFile)
 
             with open(self.robotPlanFile, 'w') as plan_file:
@@ -37,10 +37,13 @@ class Problem:
                 self.plan = temp[:-1]
                 self.cost = int(temp[-1].split(' ')[3].strip())
             
-        ground(robotModelFile, problemFile)
 
-        self.groundedRobotPlanFile   = '../domain/cache_grounded_plan.dat'
-        grounded_plan, grounded_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
+
+        ground(robotModelFile, problemFile)
+        self.groundedRobotPlanFile   = '../../domain/cache_grounded_plan.dat'
+        grounded_plan, self.grounded_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
+        self.grounded_robot_plan = set([i for i in grounded_plan])
+
         with open(self.groundedRobotPlanFile, 'w') as plan_file:
             plan_file.write('\n'.join(['({})'.format(item) for item in grounded_plan]) + '\n; cost = {} (unit cost)'.format(self.cost))
 
@@ -48,47 +51,61 @@ class Problem:
         self.ground_state = read_state_from_domain_file('tr-domain.pddl')
         
         ground(humanModelFile, problemFile)
+        self.groundedHumanPlanFile = '../../domain/cache_human_grounded_plan.dat'
+        grounded_human_plan, self.human_grounded_plan_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
+        self.grounded_human_plan =  set([i for i in grounded_human_plan])
+
+        with open(self.groundedHumanPlanFile, 'w') as plan_file:
+            plan_file.write('\n'.join(['({})'.format(item) for item in grounded_human_plan]) + '\n; cost = {} (unit cost)'.format(self.human_grounded_plan_cost))
 
         try:    self.initialState = read_state_from_domain_file('tr-domain.pddl')
         except: self.initialState = []
-
         
     def getStartState(self):
         return self.initialState
 
     def isGoal(self, state):
-
         temp_domain      = write_domain_file_from_state(state)
-        plan, cost       = get_plan(temp_domain, 'tr-problem.pddl')
-        optimality_flag  = cost == self.cost
-        
-        feasibility_flag = validate_plan(temp_domain, 'tr-problem.pddl', self.groundedRobotPlanFile)
-        return optimality_flag and feasibility_flag
+
+        if not validate_plan(temp_domain, 'tr-problem.pddl', self.groundedRobotPlanFile):
+            fail_pos = find_fail_point(temp_domain, 'tr-problem.pddl', self.groundedRobotPlanFile)
+            return (False, list(self.grounded_robot_plan)) #[ : min(fail_pos + 1 ,len(self.grounded_robot_plan) ) ])
+
+        if self.human_grounded_plan_cost > 0 and self.human_grounded_plan_cost <= self.grounded_cost and validate_plan(temp_domain, 'tr-problem.pddl', self.groundedHumanPlanFile):
+            return (False, self.grounded_robot_plan)
+
+        graph_test_result = plan_graph_test(temp_domain, 'tr-problem.pddl', self.groundedRobotPlanFile)
+
+        return (graph_test_result, self.grounded_robot_plan)
 
     
     def heuristic(self, state):
         return 0.0
 
     
-    def getSuccessors(self, node):
+    def getSuccessors(self, node, old_plan):
 
         listOfSuccessors = []
 
         state            = set(node[0])
+
         ground_state     = set(self.ground_state)
+
+        all_relevent_actions = set([i.lower() for i in old_plan]) | self.grounded_human_plan
 
         add_set          = ground_state.difference(state)
         del_set          = state.difference(ground_state)
-
         for item in add_set:
-            new_state    = copy.deepcopy(state)
-            new_state.add(item)
-            listOfSuccessors.append([list(new_state), item])
+            if item.split('-has-')[0].lower() in all_relevent_actions:
+                new_state    = copy.deepcopy(state)
+                new_state.add(item)
+                listOfSuccessors.append([list(new_state), item])
 
         for item in del_set:
-            new_state    = copy.deepcopy(state)
-            new_state.remove(item)
-            listOfSuccessors.append([list(new_state), item])
+            if item.split('-has-')[0] in all_relevent_actions:
+                new_state    = copy.deepcopy(state)
+                new_state.remove(item)
+                listOfSuccessors.append([list(new_state), item])
             
         return listOfSuccessors
         

@@ -18,7 +18,7 @@ __DOMAIN_SOURCE__ = '../domain/domain_template.pddl'
 
 __GROUND_CMD__    = "./ground.sh {} {} > stdout.txt"
 __FD_PLAN_CMD__   = "./fdplan.sh {} {}"
-__VAL_PLAN_CMD__  = "./validate.sh {} {} {}"
+__VAL_PLAN_CMD__  = "./valplan.sh {} {} {}"
 
 
 '''
@@ -110,10 +110,10 @@ Method :: compute plan from domain and problem files
 '''
 
 def get_plan(domainFileName, problemFileName):
-
     output = os.popen(__FD_PLAN_CMD__.format(domainFileName, problemFileName)).read().strip()
         
-    plan   = [item.strip().replace('_', ' ') for item in output.split('\n')] if output != '' else []
+    #plan   = [item.strip().replace('_', ' ') for item in output.split('\n')] if output != '' else []
+    plan   = [item.strip() for item in output.split('\n')] if output != '' else []
     cost   = len(plan)
 
     return [plan, cost]
@@ -133,10 +133,15 @@ def ground(domainFileName, problemFileName):
 Method :: validate plan given PDDL domain and problem files
 '''
 
-def validate_plan(domainFileName, problemFileName, planFileName):
+#def validate_plan(domainFileName, problemFileName, planFileName):
 
-    output = os.system(__VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName))
+#    output = os.system(__VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName))
+#    return eval(output)
+
+def validate_plan(domainFileName, problemFileName, planFileName):
+    output = os.popen(__VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName)).read().strip()
     return eval(output)
+
 
 
 if __name__ == '__main__':

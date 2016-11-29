@@ -76,8 +76,10 @@ def ground(problem):
 
     # Ground actions
     operators = _ground_actions(actions, type_map, statics, init)
-    if verbose_logging:
-        logging.debug('Operators:\n%s' % '\n'.join(map(str, operators)))
+    #if verbose_logging:
+    #logging.debug
+    #print ('Operators:\n%s' % '\n'.join(map(str, operators)))
+    #print ('actions:\n%s' % '\n'.join(map(str, actions)))
 
     # Ground goal
     # TODO: Remove facts that can only become true and are true in the
@@ -260,7 +262,7 @@ def _ground_action(action, type_map, statics, init):
     """
     Ground the action and return the resulting list of operators.
     """
-    logging.debug('Grounding %s' % action.name)
+    #logging.debug
     param_to_objects = {}
 
     for param_name, param_types in action.signature:
@@ -273,25 +275,25 @@ def _ground_action(action, type_map, statics, init):
     # For each parameter that is not constant,
     # remove all invalid static preconditions
     remove_debug = 0
-    for param, objects in param_to_objects.items():
-        for pred in action.precondition:
-            # if a static predicate is present in the precondition
-            if pred.name in statics:
-                sig_pos = -1
-                count = 0
-                # check if there is an instantiation with the current parameter
-                for var, _ in pred.signature:
-                    if var == param:
-                        sig_pos = count
-                    count += 1
-                if sig_pos != -1:
-                    # remove if no instantiation present in initial state
-                    obj_copy = objects.copy()
-                    for o in obj_copy:
-                        if not _find_pred_in_init(pred.name, o, sig_pos, init):
-                            if verbose_logging:
-                                remove_debug += 1
-                            objects.remove(o)
+#    for param, objects in param_to_objects.items():
+#        for pred in action.precondition:
+#            # if a static predicate is present in the precondition
+#            if pred.name in statics:
+#                sig_pos = -1
+#                count = 0
+#                # check if there is an instantiation with the current parameter
+#                for var, _ in pred.signature:
+#                    if var == param:
+#                        sig_pos = count
+#                    count += 1
+#                if sig_pos != -1:
+#                    # remove if no instantiation present in initial state
+#                    obj_copy = objects.copy()
+#                    for o in obj_copy:
+#                        if not _find_pred_in_init(pred.name, o, sig_pos, init):
+#                            if verbose_logging:
+#                                remove_debug += 1
+#                            objects.remove(o)
     if verbose_logging:
         logging.info('Static precondition analysis removed %d possible objects'
                      % remove_debug)
@@ -323,14 +325,14 @@ def _create_operator(action, assignment, statics, init):
     for precondition in action.precondition:
         fact = _ground_atom(precondition, assignment)
         predicate_name = precondition.name
-        if predicate_name in statics:
+        #if predicate_name in statics:
             # Check if this precondition is false in the initial state
-            if fact not in init:
+        #    if fact not in init:
                 # This precondition is never true -> Don't add operator
-                return None
-        else:
+        #        return None
+        #else:
             # This precondition is not always true -> Add it
-            precondition_facts.add(fact)
+        precondition_facts.add(fact)
 
     add_effects = _ground_atoms(action.effect.addlist, assignment)
     del_effects = _ground_atoms(action.effect.dellist, assignment)

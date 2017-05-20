@@ -49,6 +49,7 @@ class GROUNDER_INTERFACE(object):
                 tmp_str = tmp_str.replace('%DEL_EFFECTS%',del_str)
                 action_string += "\n" + tmp_str
        domain = domain.replace('%OPERATORS%',action_string)
+       print (domain)
        with open(target_domain_file,'w') as d_fd:
            d_fd.write(domain)
        problem =  self.prob_template.replace(INIT_TEMPL, '\n'.join(self.de_parameterizer(self.task.initial_state)))

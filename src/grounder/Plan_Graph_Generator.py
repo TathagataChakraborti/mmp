@@ -14,27 +14,24 @@ class PLanGraphGenerator:
     
     def perform_fault_check(self):
         fault_list = []
+        contributing_actions = set()
+        pos = 0
         for action in self.new_plan:
             preconds = list(self.operator_map[action].preconditions)
             old_faults = copy.deepcopy(fault_list)
-
             for fault in old_faults:
-                faulty_action, fault_name = fault.split(':')
+                faulty_action, fault_pos, fault_name = fault.split(':')
                 if fault_name in preconds:
                     fault_list.pop(fault_list.index(fault))
                     preconds.pop(preconds.index(fault_name))
+                    contributing_actions.add(faulty_action+fault_pos)
             add_effects = list(self.operator_map[action].add_effects)
             add_effects.sort()
             for add in add_effects:
-                fault_list.append(action+':'+add)
-        if len(fault_list) > 0:
-            for action in self.new_plan:
-                faulty_action_flag = True
-                for add in self.operator_map[action].add_effects:
-                    if action+':'+add not in fault_list:
-                        faulty_action_flag = False
-                if faulty_action_flag:
-                    return False
+                fault_list.append(action+':'+str(pos)+':'+add)
+            pos = pos+1
+        if len(contributing_actions) < len(self.new_plan) - 1 :
+            return False
         return True
 
 

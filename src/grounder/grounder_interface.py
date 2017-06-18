@@ -3,7 +3,7 @@ import copy
 from pddl.parser import Parser
 import grounding
 import sys
-from Plan_Graph_Generator import PLanGraphGenerator
+from Plan_Tools import PlanTools
 
 DOM_TEMPL = "templ_domain.pddl"
 PROB_TEMPL = "templ_problem.pddl"
@@ -61,7 +61,7 @@ class GROUNDER_INTERFACE(object):
         operator_map = {}
         for op in self.task.operators:
             operator_map[op.name] = op
-        pg = PLanGraphGenerator(self.task, plan, operator_map)
+        pg = PlanTools(self.task, plan, operator_map)
         if pg.perform_fault_check():
             print ("True")
         else:

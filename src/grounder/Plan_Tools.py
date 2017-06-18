@@ -3,7 +3,7 @@ import os
 import task
 import copy
 
-class PLanGraphGenerator:
+class PlanTools:
     def __init__(self, robot_task, plan, operator_map):
         start_action = task.Operator('init_action', frozenset(), robot_task.initial_state, frozenset())
         end_action = task.Operator('goal_action', robot_task.goals, frozenset(), frozenset())

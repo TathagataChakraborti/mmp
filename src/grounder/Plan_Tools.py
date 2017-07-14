@@ -12,23 +12,26 @@ class PlanTools:
         self.operator_map[end_action.name] = end_action
         self.new_plan = [start_action.name] + plan + [end_action.name]
     
-    def perform_fault_check(self):
-        fault_list = []
+    def perform_contribution_check(self):
+        effect_list = []
         contributing_actions = set()
         pos = 0
         for action in self.new_plan:
             preconds = list(self.operator_map[action].preconditions)
-            old_faults = copy.deepcopy(fault_list)
-            for fault in old_faults:
-                faulty_action, fault_pos, fault_name = fault.split(':')
-                if fault_name in preconds:
-                    fault_list.pop(fault_list.index(fault))
-                    preconds.pop(preconds.index(fault_name))
-                    contributing_actions.add(faulty_action+fault_pos)
+            del_lists = list(self.operator_map[action].del_effects)
+            old_eff = copy.deepcopy(effect_list)
+            for eff in effect_list:
+                eff_action, eff_pos, eff_name = eff.split(':')
+                if eff_name in del_lists:
+                    effect_list.pop(effect_list.index(eff))
+                elif eff_name in preconds:
+                    effect_list.pop(effect_list.index(eff))
+                    preconds.pop(preconds.index(eff_name))
+                    contributing_actions.add(eff_action+eff_pos)
             add_effects = list(self.operator_map[action].add_effects)
             add_effects.sort()
             for add in add_effects:
-                fault_list.append(action+':'+str(pos)+':'+add)
+                effect_list.append(action+':'+str(pos)+':'+add)
             pos = pos+1
         if len(contributing_actions) < len(self.new_plan) - 1 :
             return False

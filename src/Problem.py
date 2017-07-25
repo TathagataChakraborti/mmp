@@ -105,7 +105,10 @@ class Problem:
         temp_domain, temp_problem = write_domain_file_from_state(state, self.domainTemplate, self.problemTemplate)
         feasibility_flag = validate_plan(temp_domain, temp_problem, self.groundedRobotPlanFile)
         if not feasibility_flag:
-            return (False, [])
+            plan = []
+            if self.heuristic_flag:
+                plan, cost = get_plan(temp_domain, temp_problem)
+            return (False, plan)
 
         plan, cost       = get_plan(temp_domain, temp_problem)
         optimality_flag  = cost == self.cost

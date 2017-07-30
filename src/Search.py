@@ -107,7 +107,9 @@ def EESearch(problem, alpha):
     closed                = set()
     numberOfNodesExpanded = 0
     curr_sol = []
-    curr_sol_value = problem.MAX_VAL
+    curr_plan = []
+    curr_sol_value = float('inf')
+    curr_sol_Exp_value = -1
     fringe.put((problem.heuristic(startState), [startState, []]))
 
     print "Runnning aStar Search..."
@@ -115,13 +117,21 @@ def EESearch(problem, alpha):
         
         node = fringe.get()[1]
         goal_check, old_plan = problem.isGoal(node[0])
-        candidate_node_val = len(node[1]) + alpha * problem.EEobjective(node[0], old_plan) 
-        if candidate_node_val < curr_sol_value:
+        #exit(0)
+        exply_cost = problem.exply_cost(node[0], old_plan)
+        candidate_node_val = len(node[1]) + alpha * exply_cost
+        print "current explanation",len(node[1])
+        if candidate_node_val <= curr_sol_value:
+            curr_plan = old_plan
             curr_sol = node
             curr_sol_value = candidate_node_val
-        if goal_check:
+            curr_sol_Exp_value = exply_cost
+        if goal_check and exply_cost != float('inf'):
             print "Goal Found! Number of Nodes Expanded =", numberOfNodesExpanded, node[1]
-            return curr_sol[1]
+            print "final total score",curr_sol_value
+            print "final exply score with alpha",alpha * curr_sol_Exp_value
+            print "final exply score without alpha",curr_sol_Exp_value
+            return (curr_sol[1], curr_plan)
         #else:
         #    print "Goal not found for", node[1]
 

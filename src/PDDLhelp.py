@@ -138,7 +138,9 @@ def read_state_from_domain_file(domainFileName, problemFileName):
             print "exception",exc
             #print description
             effects        = {}
-            
+
+        #print "action name:",action_name
+        #print "parameters:",parameters            
         return [action_name, parameters, preconditions, effects]
 
     
@@ -189,6 +191,7 @@ Method :: compute plan from domain and problem files
 '''
 
 def get_plan(domainFileName, problemFileName):
+    print __FD_PLAN_CMD__.format(domainFileName, problemFileName)
     output = os.popen(__FD_PLAN_CMD__.format(domainFileName, problemFileName)).read().strip()
     plan   = [item.strip() for item in output.split('\n')] if output != '' else []
     if len(plan) > 0:
@@ -219,7 +222,7 @@ Method :: validate plan given PDDL domain and problem files
 '''
 
 def validate_plan(domainFileName, problemFileName, planFileName):
-    #print __VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName)
+    print __VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName)
     output = os.popen(__VAL_PLAN_CMD__.format(domainFileName, problemFileName, planFileName)).read().strip()
     return eval(output)
 

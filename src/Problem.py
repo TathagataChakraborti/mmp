@@ -81,19 +81,27 @@ class Problem:
             self.grounded_human_plan =  set([i for i in grounded_human_plan])
 
     def exply_cost(self, state, plan):
-        temp_domain, temp_problem = write_domain_file_from_state(self.robotState, self.domainTemplate, self.problemTemplate)
-        feasibility_flag = validate_plan(temp_domain, temp_problem, plan)
+        temp_domain, temp_problem = write_domain_file_from_state(self.robot_state, self.domainTemplate, self.problemTemplate)
+        groundedTmpPlanFile = '../domain/cache_grounded_tmp_plan.dat'
+
+        with open(groundedTmpPlanFile, 'w') as plan_file:
+            plan_file.write('\n'.join(['({})'.format(item) for item in plan]) + '\n; cost = {} (unit cost)'
+                            .format(len(plan)))
+
+        feasibility_flag = validate_plan(temp_domain, temp_problem, groundedTmpPlanFile)
         if not feasibility_flag:
+            print "exply cost",float('inf')
             return float('inf')
         else:
-            return abs(len(plan) - len(self.cost)
+            print "exply cost",abs(len(plan) - self.cost)
+            return abs(len(plan) - self.cost)
 
     def EESearch(self):
         self.EE_flag = True
         self.initialState = copy.copy(self.human_state)
         self.goalState = copy.copy(self.robot_state)
-        plan = astarSearch(self, explicability_flag = True)
-        return plan
+        Exp, plan = EESearch(self,self.alpha)
+        return (Exp, plan)
 
     def MeSearch(self):
         self.initialState = copy.copy(self.human_state)
@@ -121,13 +129,17 @@ class Problem:
 
     def orig_isGoal(self, state):
         temp_domain, temp_problem = write_domain_file_from_state(state, self.domainTemplate, self.problemTemplate)
-        feasibility_flag = validate_plan(temp_domain, temp_problem, self.groundedRobotPlanFile)
+        if not self.EE_flag:
+            feasibility_flag = validate_plan(temp_domain, temp_problem, self.groundedRobotPlanFile)
 
-        if not self.heuristic_flag and not self.EE_flag and not feasibility_flag:
-            return (False, plan)
+            if not self.heuristic_flag and not feasibility_flag:
+                return (False, [])
 
         plan, cost       = get_plan(temp_domain, temp_problem)
         optimality_flag  = cost == self.cost
+        if self.EE_flag:
+            # We dont care about the executability of the original plan
+            feasibility_flag = True
         return (optimality_flag and feasibility_flag, plan)
 
     def approx_isGoal(self, state):
@@ -166,12 +178,12 @@ class Problem:
         for item in add_set:
             new_state    = copy.deepcopy(state)
             new_state.add(item)
-            listOfSuccessors.append([list(new_state), item])
+            listOfSuccessors.append([list(new_state), "add-"+item])
 
         for item in del_set:
             new_state    = copy.deepcopy(state)
             new_state.remove(item)
-            listOfSuccessors.append([list(new_state), item])
+            listOfSuccessors.append([list(new_state), "remove-"+item])
             
         return listOfSuccessors
 

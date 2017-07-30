@@ -53,7 +53,9 @@ def main():
     # define problem object and run the required search
     pr_obj = Problem(args.model, args.nmodel, args.problem, args.tmodel,
      args.ground, args.approx, args.heuristic,
-     args.tproblem, args.hproblem, args.plan_file, args.alpha)
+     args.tproblem, args.hproblem, args.plan_file, float(args.alpha))
+
+    solution = None
 
     if args.search.lower() == "me":
         plan = pr_obj.MeSearch()
@@ -63,7 +65,7 @@ def main():
             exit(1)
         plan = pr_obj.MCESearch()
     else:
-        plan = pr_obj.EESearch()
+        plan, solution = pr_obj.EESearch()
     explanation      = ''
     for item in plan:
         explanation += "Explanation >> {}\n".format(item)
@@ -71,6 +73,10 @@ def main():
     print explanation.strip()
     with open('exp.dat', 'w') as explanation_file:
         explanation_file.write(explanation.strip())
+
+    if solution:
+        with open('final_plan.sol', 'w') as fp_file:
+            fp_file.write("\n".join(solution))    
 
 
 if __name__ == '__main__':

@@ -62,7 +62,7 @@ class GROUNDER_INTERFACE(object):
         for op in self.task.operators:
             operator_map[op.name] = op
         pg = PlanTools(self.task, plan, operator_map)
-        if pg.perform_fault_check():
+        if pg.perform_contribution_check():
             print ("True")
         else:
             print ("False")

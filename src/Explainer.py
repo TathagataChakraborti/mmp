@@ -6,7 +6,7 @@ Project :: Explanations for Multi-Model Planning
 Date    :: 
 '''
 
-SEARCH_OPTIONS = ["me", "mce"]
+SEARCH_OPTIONS = ["me", "mce", "ee"]
 
 import argparse, sys
 from Problem import Problem
@@ -26,7 +26,7 @@ def main():
                         help="Consider model difference in grounded domain model")
 
     # Search option
-    parser.add_argument('-s', '--search', type=str, help="Search to be use (ME or MCE)")
+    parser.add_argument('-s', '--search', type=str, help="Search to be use (ME, MCE or EE)")
 
     # Arguments for the explanation
     parser.add_argument('-m', '--model',   type=str, help="Domain file with real PDDL model of robot.", required=True)
@@ -36,6 +36,7 @@ def main():
     parser.add_argument('-q', '--hproblem', type=str, help="Problem file for human.")
     parser.add_argument('-r', '--tproblem', type=str, help="Problem file template.", required=True)
     parser.add_argument('-f', '--plan_file',    type=str, help="Plan file.")
+    parser.add_argument('-a', '--alpha',    type=str, help="alpha value for EE")
  
 
     if not sys.argv[1:] or '-h' in sys.argv[1:]:
@@ -45,22 +46,24 @@ def main():
 
 
     if args.search.lower() not in SEARCH_OPTIONS:
-        print "Unknown: Search option, please select either ME or MCE"
+        print "Unknown: Search option, please select ME, MCE or EE"
         sys.exit(1)
 
 
     # define problem object and run the required search
     pr_obj = Problem(args.model, args.nmodel, args.problem, args.tmodel,
      args.ground, args.approx, args.heuristic,
-     args.tproblem, args.hproblem, args.plan_file)
+     args.tproblem, args.hproblem, args.plan_file, args.alpha)
 
     if args.search.lower() == "me":
         plan = pr_obj.MeSearch()
-    else:
+    elif args.search.lower() == "mce":
         if args.approx and args.heuristic:
             print "MCE doesn't support heuristic or approx"
             exit(1)
         plan = pr_obj.MCESearch()
+    else:
+        plan = pr_obj.EESearch()
     explanation      = ''
     for item in plan:
         explanation += "Explanation >> {}\n".format(item)

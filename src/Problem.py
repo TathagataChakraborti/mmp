@@ -19,7 +19,7 @@ class Problem:
 
     def __init__(self, robotModelFile, humanModelFile, robotProblemFile, domainTemplate,
                  ground_flag, approx_flag, heuristic_flag,
-                 problemTemplate, humanProblemFile=None, robotPlanFile=None):
+                 problemTemplate, humanProblemFile=None, robotPlanFile=None, alpha=None):
 
         print "Setting up MMP..."
 
@@ -32,6 +32,9 @@ class Problem:
         self.approx_flag = approx_flag
         self.heuristic_flag = heuristic_flag
         self.ground_flag = ground_flag
+        self.alpha = alpha
+        self.MAX_VAL = 100000
+        self.EE_flag = False
 
         if not robotPlanFile:
             self.robotPlanFile   = '../domain/cache_plan.dat'
@@ -77,6 +80,21 @@ class Problem:
             grounded_human_plan, self.human_grounded_plan_cost = get_plan('tr-domain.pddl', 'tr-problem.pddl')
             self.grounded_human_plan =  set([i for i in grounded_human_plan])
 
+    def exply_cost(self, state, plan):
+        temp_domain, temp_problem = write_domain_file_from_state(self.robotState, self.domainTemplate, self.problemTemplate)
+        feasibility_flag = validate_plan(temp_domain, temp_problem, plan)
+        if not feasibility_flag:
+            return float('inf')
+        else:
+            return abs(len(plan) - len(self.cost)
+
+    def EESearch(self):
+        self.EE_flag = True
+        self.initialState = copy.copy(self.human_state)
+        self.goalState = copy.copy(self.robot_state)
+        plan = astarSearch(self, explicability_flag = True)
+        return plan
+
     def MeSearch(self):
         self.initialState = copy.copy(self.human_state)
         self.goalState = copy.copy(self.robot_state)
@@ -104,12 +122,13 @@ class Problem:
     def orig_isGoal(self, state):
         temp_domain, temp_problem = write_domain_file_from_state(state, self.domainTemplate, self.problemTemplate)
         feasibility_flag = validate_plan(temp_domain, temp_problem, self.groundedRobotPlanFile)
-        if not feasibility_flag:
-            return (False, [])
+
+        if not self.heuristic_flag and not self.EE_flag and not feasibility_flag:
+            return (False, plan)
 
         plan, cost       = get_plan(temp_domain, temp_problem)
         optimality_flag  = cost == self.cost
-        return (optimality_flag, plan)
+        return (optimality_flag and feasibility_flag, plan)
 
     def approx_isGoal(self, state):
         temp_domain, temp_problem = write_domain_file_from_state(state,  self.domainTemplate, self.problemTemplate)

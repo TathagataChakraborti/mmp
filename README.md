@@ -11,7 +11,7 @@
 ```
 usage: Explainer.py [-h] [--approx] [--heuristic] [--ground] [-s SEARCH] -m
                     MODEL -n NMODEL -t TMODEL -p PROBLEM [-q HPROBLEM] -r
-                    TPROBLEM [-f PLAN_FILE]
+                    TPROBLEM [-f PLAN_FILE] [-a ALPHA]
 
 The driver Script for the Explanation generation
 
@@ -23,7 +23,7 @@ optional arguments:
                         ME)
   --ground              Consider model difference in grounded domain model
   -s SEARCH, --search SEARCH
-                        Search to be use (ME or MCE)
+                        Search to be use (ME, MCE or EE)
   -m MODEL, --model MODEL
                         Domain file with real PDDL model of robot.
   -n NMODEL, --nmodel NMODEL
@@ -38,6 +38,11 @@ optional arguments:
                         Problem file template.
   -f PLAN_FILE, --plan_file PLAN_FILE
                         Plan file.
+  -a ALPHA, --alpha ALPHA
+                        alpha value for EE
+
+Usage >> ./Explainer.py -m ../domain/fetchworld-tuck-m.pddl -n ../domain
+/fetchworld-base-m.pddl -f ../domain/problem1.pddl
 
 ```
 ## Try out:

@@ -24,13 +24,16 @@ def main():
                         help="Enable use of heuristic (currently only supported for ME)")
     parser.add_argument('--ground', action='store_true',
                         help="Consider model difference in grounded domain model")
+    parser.add_argument('--tviz', action='store_true',
+                        help="Setting specific for viz")
+
 
     # Search option
     parser.add_argument('-s', '--search', type=str, help="Search to be use (ME or MCE)")
 
     # Arguments for the explanation
     parser.add_argument('-m', '--model',   type=str, help="Domain file with real PDDL model of robot.", required=True)
-    parser.add_argument('-n', '--nmodel',  type=str, help="Domain file with human model of the robot.", required=True)
+    parser.add_argument('-n', '--nmodel',  type=str, help="Domain file with human model of the robot.")
     parser.add_argument('-t', '--tmodel', type=str, help="Domain file template for the problem.", required=True)
     parser.add_argument('-p', '--problem', type=str, help="Problem file for robot.", required=True)
     parser.add_argument('-q', '--hproblem', type=str, help="Problem file for human.")
@@ -41,7 +44,14 @@ def main():
     if not sys.argv[1:] or '-h' in sys.argv[1:]:
         print parser.print_help()
         sys.exit(1)
+
     args = parser.parse_args()
+
+    if args.tviz:
+        args.approx = True
+        args.heuristic = True
+        args.search = "me"
+        args.nmodel = None
 
 
     if args.search.lower() not in SEARCH_OPTIONS:
@@ -52,7 +62,7 @@ def main():
     # define problem object and run the required search
     pr_obj = Problem(args.model, args.nmodel, args.problem, args.tmodel,
      args.ground, args.approx, args.heuristic,
-     args.tproblem, args.hproblem, args.plan_file)
+     args.tproblem, args.hproblem, args.plan_file, args.tviz)
 
     if args.search.lower() == "me":
         plan = pr_obj.MeSearch()

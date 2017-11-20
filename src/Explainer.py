@@ -49,8 +49,8 @@ def main():
 
     if args.tviz:
         args.approx = True
-        args.heuristic = True
-        args.search = "me"
+        #args.heuristic = True
+        args.search = "mce"
         args.nmodel = None
 
 

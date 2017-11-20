@@ -7,12 +7,13 @@
   )
 
   (:init
-    (got_recent_people)
+    (got_recent_people)  	
   ) 
 
   (:goal (and 
-    (orchestrated_collective_ranking)
-(added_participant jeff)
+  			(added_participant jeff)
+  			(orchestrated_collective_ranking))
+
   )
-  )
+
 )

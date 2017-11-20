@@ -12,29 +12,51 @@ class PlanTools:
         self.operator_map[end_action.name] = end_action
         self.new_plan = [start_action.name] + plan + [end_action.name]
     
+#    def perform_contribution_check(self):
+#        effect_list = []
+#        contributing_actions = set()
+#        pos = 0
+#        pred_list = {}
+#        for action in self.new_plan:
+#            preconds = list(self.operator_map[action].preconditions)
+#            del_lists = list(self.operator_map[action].del_effects)
+#            old_eff = copy.deepcopy(effect_list)
+#            for eff in effect_list:
+#                eff_action, eff_pos, eff_name = eff.split(':')
+#                if eff_name in del_lists:
+#                    effect_list.pop(effect_list.index(eff))
+#                elif eff_name in preconds:
+#                    effect_list.pop(effect_list.index(eff))
+#                    preconds.pop(preconds.index(eff_name))
+#                    contributing_actions.add(eff_action+eff_pos)
+#            add_effects = list(self.operator_map[action].add_effects)
+#            add_effects.sort()
+#            for add in add_effects:
+#                effect_list.append(action+':'+str(pos)+':'+add)
+#            pos = pos+1
+#        print (contributing_actions)
+#        if len(contributing_actions) < len(self.new_plan) - 1 :
+#            return False
+#        return True
+
     def perform_contribution_check(self):
         effect_list = []
         contributing_actions = set()
         pos = 0
+        pred_list = {}
         for action in self.new_plan:
             preconds = list(self.operator_map[action].preconditions)
-            del_lists = list(self.operator_map[action].del_effects)
-            old_eff = copy.deepcopy(effect_list)
-            for eff in effect_list:
-                eff_action, eff_pos, eff_name = eff.split(':')
-                if eff_name in del_lists:
-                    effect_list.pop(effect_list.index(eff))
-                elif eff_name in preconds:
-                    effect_list.pop(effect_list.index(eff))
-                    preconds.pop(preconds.index(eff_name))
-                    contributing_actions.add(eff_action+eff_pos)
-            add_effects = list(self.operator_map[action].add_effects)
-            add_effects.sort()
-            for add in add_effects:
-                effect_list.append(action+':'+str(pos)+':'+add)
-            pos = pos+1
+            for p in preconds:
+                if p in pred_list.keys():
+                    contributing_actions.add(pred_list[p])
+            for p in self.operator_map[action].del_effects:
+                if p in pred_list.keys():
+                    del  pred_list[p]
+            for p in self.operator_map[action].add_effects:
+                if p not in pred_list.keys():
+                    pred_list[p] = action
+        #print (contributing_actions)
         if len(contributing_actions) < len(self.new_plan) - 1 :
             return False
         return True
-
 

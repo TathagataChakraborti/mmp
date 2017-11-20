@@ -9,6 +9,7 @@ Date    :: 09/29/2016
 
 from Queue import PriorityQueue, Queue
 import copy
+import time
 
 '''
 Method :: Astar Search
@@ -22,26 +23,26 @@ def astarSearch(problem):
     numberOfNodesExpanded = 0
 
     fringe.put((problem.heuristic(startState), [startState, []]))
-
+    old_len = 0
     print "Runnning aStar Search..."
     while not fringe.empty():
         
         node = fringe.get()[1]
+        st_time = time.time()
         goal_check, old_plan = problem.isGoal(node[0])
+        print "Time taken to expand nodes",time.time() - st_time
         if goal_check:
             print "Goal Found! Number of Nodes Expanded =", numberOfNodesExpanded, node[1]
             return node[1]
         #else:
         #    print "Goal not found for", node[1]
+        if frozenset(sorted(node[0])) not in closed:
 
-        if frozenset(node[0]) not in closed:
-
-            closed.add(frozenset(node[0]))
+            closed.add(frozenset(sorted(node[0])))
 
             successor_list         = problem.getSuccessors(node, old_plan)
 
             numberOfNodesExpanded += 1
-
             if not numberOfNodesExpanded % 100:
                 print "Number of Nodes Expanded =", numberOfNodesExpanded
             
@@ -49,9 +50,12 @@ def astarSearch(problem):
                 
                 candidate_node     = successor_list.pop()
                 new_node           = [candidate_node[0], node[1] + [candidate_node[1]]]
-                
+                if len(new_node[1]) > old_len:
+                    print "length",len(new_node[1])
+                    old_len =  len(new_node[1])
                 fringe.put((problem.heuristic(candidate_node[0]) + len(new_node[1]), new_node))
-
+                #print "heu",problem.heuristic(candidate_node[0])
+                #print "f",problem.heuristic(candidate_node[0]) + len(new_node[1])
     return None
 
 def BFSearch(problem):
@@ -69,12 +73,13 @@ def BFSearch(problem):
     while not fringe.empty():
         node = fringe.get()[1]
         goal_check, old_plan = problem.isGoal(node[0])
+        #print "node[0]",node[0]
         if not goal_check:
             #print "Goal not Found! Number of Nodes Expanded =", numberOfNodesExpanded
-            #print "Failed for path",node[1]
+            print "Failed for path",node[1]
             conflict_list.append(set(node[1]))
         else:
-            #print "It was fine"
+            print "It was fine"
             if frozenset(node[0]) not in closed:
                 conflict_flag = False
                 for item in conflict_list:

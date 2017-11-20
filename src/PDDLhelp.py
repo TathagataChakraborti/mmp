@@ -42,16 +42,17 @@ def write_domain_file_from_state(state, domain_source, problem_source):
     actionList    = {}
     init_state_list = []
     goal_state_list =[]
-
+    #print "stae=te",len(state)
     for item in state:
         if "state" not in item:
             regex_probe   = re.compile("(.*)-has-(parameters|negprecondition|precondition|add-effect|delete-effect)-(.*)$").search(item)
+            #if regex_probe:
             actionName    = regex_probe.group(1)
             _condition    = regex_probe.group(2)
             predicateName = regex_probe.group(3)
 
             predicateList.add(predicateName)
-
+    
             if actionName not in actionList: actionList[actionName] = {'parameters':"", 'precondition' : [], 'negprecondition' : [], 'add-effect' : [], 'delete-effect' : []}
             if _condition == 'parameters':
                 actionList[actionName][_condition] = predicateName
@@ -59,6 +60,7 @@ def write_domain_file_from_state(state, domain_source, problem_source):
                 actionList[actionName][_condition].append(predicateName) 
         else:
             regex_probe   = re.compile("has-(initial|goal)-state-(.*)$").search(item)
+            #if regex_probe:
             state_type = regex_probe.group(1)
             pred = regex_probe.group(2)
             if state_type == 'initial':
@@ -174,6 +176,7 @@ def read_state_from_domain_file(domainFileName, problemFileName):
         state.append('has-initial-state-{}'.format(pred))
     for pred in goal_state:
         state.append('has-goal-state-{}'.format(pred))
+    print state
     return state
 
 
@@ -224,7 +227,7 @@ def validate_plan(domainFileName, problemFileName, planFileName):
     return eval(output)
 
 def plan_graph_test(domainFileName, problemFileName, planFileName):
-    #print __GRAPH_TEST_CMD__.format(domainFileName, problemFileName, planFileName)
+    print __GRAPH_TEST_CMD__.format(domainFileName, problemFileName, planFileName)
     output = os.popen(__GRAPH_TEST_CMD__.format(domainFileName, problemFileName, planFileName)).read().strip()
     #exit(0)
     return eval(output)

@@ -1,0 +1,32 @@
+;; parsed domain: collective-decision
+;; parsed problem: cd-prob1
+;;GROUNDING GOALS
+;; Goal: (added_participant jeff) 7 Deadline: Infinity hard RewardC: 0.0 Penalty: 0.0
+;; Goal: (orchestrated_collective_ranking) 11 Deadline: Infinity hard RewardC: 0.0 Penalty: 0.0
+;;Reachable: Fluents: 1 Propositions: 12 Actions: 12
+;;Dynamic: Fluents: 0 Propositions: 10 Actions: 11
+;;Parsing & grounding: 17 milliseconds.
+;; grounded first orders
+;;SELECTED GOALS: [7, 11]
+
+;;<<< Start Searching for Solution >>>
+h: 9.0 g: 0.0 hCost: 9.0 gCost: 0.0 generated: 1 explored: 0 bound: 0.0
+h: 8.0 g: 1.0 hCost: 8.0 gCost: 1.0 generated: 4 explored: 1 bound: 0.0
+h: 7.0 g: 2.0 hCost: 7.0 gCost: 2.0 generated: 12 explored: 2 bound: 0.0
+h: 6.0 g: 3.0 hCost: 6.0 gCost: 3.0 generated: 27 explored: 4 bound: 0.0
+h: 5.0 g: 4.0 hCost: 5.0 gCost: 4.0 generated: 43 explored: 6 bound: 0.0
+h: 4.0 g: 5.0 hCost: 4.0 gCost: 5.0 generated: 59 explored: 8 bound: 0.0
+h: 3.0 g: 6.0 hCost: 3.0 gCost: 6.0 generated: 84 explored: 11 bound: 0.0
+h: 2.0 g: 7.0 hCost: 2.0 gCost: 7.0 generated: 96 explored: 12 bound: 0.0
+h: 1.0 g: 8.0 hCost: 1.0 gCost: 8.0 generated: 120 explored: 14 bound: 0.0
+h: 0.0 g: 9.0 hCost: 0.0 gCost: 9.0 generated: 154 explored: 17 bound: 0.0
+0.00: (get-celio-context)[0.0078125]
+0.00: (display-participants)[0.0078125]
+0.00: (get-full-context)[0.0078125]
+0.00: (set-celio-context)[0.0078125]
+0.00: (display-alternatives)[0.0078125]
+0.01: (determine-participants)[0.0078125]
+0.01: (add-participant jeff)[0.0078125]
+0.01: (elicit-all-individual-preferences)[0.0078125]
+0.02: (orchestrate-collective-ranking)[0.0078125]
+;; EOP

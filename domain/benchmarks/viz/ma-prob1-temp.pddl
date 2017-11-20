@@ -7,12 +7,11 @@
   )
 
   (:init
-    (got_recent_people)
+    %INIT%
   ) 
 
   (:goal (and 
-    (orchestrated_collective_ranking)
-(added_participant jeff)
+    %GOAL%
   )
   )
 )

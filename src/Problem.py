@@ -48,6 +48,10 @@ class Problem:
                 self.plan = temp[:-1]
                 self.cost = int(temp[-1].split(' ')[3].strip())
 
+        self.action_set = set()
+        for i in self.plan:
+            self.action_set.add(i.split(' ')[0])
+
         self.groundedRobotPlanFile   = '../domain/cache_grounded_plan.dat'
 
         with open(self.groundedRobotPlanFile, 'w') as plan_file:
@@ -63,7 +67,8 @@ class Problem:
                 for k in include_keys:
                     if k in prop:
                         # assuming no conflict in the include key list
-                        self.human_state.append(k)
+                        self.human_state.append(prop)
+            print "MPE SIZE",len(set(self.robot_state) - set(self.human_state))
             self.grounded_human_plan =  set()
         else:
 
@@ -130,6 +135,7 @@ class Problem:
 
         if not validate_plan(temp_domain, temp_problem, self.groundedRobotPlanFile):
             #fail_pos = find_fail_point(temp_domain, temp_problem, self.groundedRobotPlanFile)
+            print "val failed"
             return (False, list(self.plan)) #[ : min(fail_pos + 1 ,len(self.grounded_robot_plan) ) ])
 
         #if self.human_grounded_plan_cost > 0 and self.human_grounded_plan_cost <= self.cost and \
@@ -137,10 +143,20 @@ class Problem:
         #    return (False, self.plan)
 
         graph_test_result = plan_graph_test(temp_domain, temp_problem, self.groundedRobotPlanFile)
+        print "graph test failed"
         return (graph_test_result, self.plan)
     
     def heuristic(self, state):
-        return 0.0
+        #unique_actions = set()
+        #for prop in state:
+        #    if "state" not in prop:
+        #        unique_actions.add(prop.split("-has-")[0])
+        #c_len = 0
+        #for i in (self.action_set - unique_actions):
+        #uif c_len > 0:
+        #    c_len += 1.5
+        #return c_len
+        return 0
 
     
     def getSuccessors(self, node, old_plan = None):

@@ -6,7 +6,7 @@ Project :: Explanations for Multi-Model Planning
 Date    :: 
 '''
 
-SEARCH_OPTIONS = ["me", "mce"]
+SEARCH_OPTIONS = ["lies"]
 
 import argparse, sys
 from Problem import Problem
@@ -35,6 +35,7 @@ def main():
     parser.add_argument('-p', '--problem', type=str, help="Problem file for robot.", required=True)
     parser.add_argument('-q', '--hproblem', type=str, help="Problem file for human.")
     parser.add_argument('-r', '--tproblem', type=str, help="Problem file template.", required=True)
+    parser.add_argument('-l', '--limit', type=str, help="Limit to second level search", required=True)
     parser.add_argument('-f', '--plan_file',    type=str, help="Plan file.")
  
 
@@ -52,7 +53,7 @@ def main():
     # define problem object and run the required search
     pr_obj = Problem(args.model, args.nmodel, args.problem, args.tmodel,
      args.ground, args.approx, args.heuristic,
-     args.tproblem, args.hproblem, args.plan_file)
+     args.tproblem, args.hproblem, args.plan_file, args.limit)
 
     if args.search.lower() == "me":
         plan = pr_obj.MeSearch()
@@ -60,7 +61,7 @@ def main():
         if args.approx and args.heuristic:
             print "MCE doesn't support heuristic or approx"
             exit(1)
-        plan = pr_obj.MCESearch()
+        plan = pr_obj.LIESSearch()
     explanation      = ''
     for item in plan:
         explanation += "Explanation >> {}\n".format(item)

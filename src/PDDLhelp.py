@@ -36,7 +36,7 @@ def get_problem_state_preds(domain_file, proble_file, section_prefix):
 Method :: write domain file from given state
 '''
 
-def write_domain_file_from_state(state, domain_source, problem_source):
+def write_domain_file_from_state(state, domain_source, problem_source, dom_dst=None, prob_dst=None):
 
     predicateList = set()
     actionList    = {}
@@ -65,9 +65,12 @@ def write_domain_file_from_state(state, domain_source, problem_source):
                 init_state_list.append('({})'.format(' '.join(pred.split('@'))))
             else:
                 goal_state_list.append('({})'.format(' '.join(pred.split('@'))))
-
-    temp_domainFileName = 'temp.pddl'
-    temp_problemFileName = 'temp_prob.pddl'
+    if not dom_dst:
+        temp_domainFileName = 'temp.pddl'
+        temp_problemFileName = 'temp_prob.pddl'
+    else:
+        temp_domainFileName = dom_dst
+        temp_problemFileName = prob_dst
 
     with open(domain_source, 'r') as template_domain_file:
         template_domain = template_domain_file.read()
@@ -196,6 +199,8 @@ def get_plan(domainFileName, problemFileName):
         cost   = int(output)
     else:
         cost = 0
+    if "NOT SUPPORTED" in plan:
+        exit(0)
 
     return [plan, cost]
 

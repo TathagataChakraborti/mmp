@@ -23,7 +23,7 @@ for pred in state:
     if new_cnt >= count:
         new_state.append(pred)
     else:
-        if 'parameter' not in pred:
+        if 'parameter' not in pred and 'init' not in pred and 'goal' not in pred:
             new_cnt += 1
         else:
             new_state.append(pred)

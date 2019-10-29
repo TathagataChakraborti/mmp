@@ -10,6 +10,7 @@ Date    :: 09/29/2016
 from PDDLhelp import *
 from Search   import *
 import copy
+import time
 
 '''
 Class :: Environment Definition
@@ -85,16 +86,21 @@ class Problem:
         return plan
 
     def LIESSearch(self):
+        start_time = time.time()
         self.initialState = copy.copy(self.robot_state)
         self.goalState = copy.copy(self.human_state)
         state, k_plan = BFSearch(self)
-        print "Finished MME search....", list(((set(self.initialState) - set(self.human_state))| (set(self.human_state) - set(self.initialState))) - set(k_plan))
-
+        print "Finished MME search..."
+        print "MME Time >>>", time.time() - start_time
+        start_second_set = time.time()
         self.initialState = copy.copy(state)
         self.goalState = copy.copy(self.human_state)
         node = BFSearch_mod(self)
         print "Count >>>", node[1]
-        return node[-1]        
+        print "Time for just second set search>>>", time.time() - start_second_set
+        print "Total time>>>", time.time() - start_time
+        return node[-1] 
+
         #return list(((set(self.initialState) - set(self.human_state))| (set(self.human_state) - set(self.initialState)))
         #           - set(k_plan))
 

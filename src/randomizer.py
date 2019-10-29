@@ -4,14 +4,11 @@ from PDDLhelp import *
 import random
 
 dom_file = sys.argv[1]
-prob_file = sys.argv[2]
-count = int(sys.argv[3])
-dst_templ_file =  sys.argv[4]
-dst_prob_file = sys.argv[5]
-dst_dom_file = sys.argv[6]
-dst_prob_file = sys.argv[7]
+count = int(sys.argv[2])
+dst_templ_file =  sys.argv[3]
+dst_dom_file = sys.argv[4]
 
-state = read_state_from_domain_file(dom_file, prob_file)
+state = read_state_from_domain_only_file(dom_file)
 
 random.shuffle(state)
 
@@ -29,4 +26,4 @@ for pred in state:
             new_state.append(pred)
 
 assert new_cnt >= count, "There isn't enough non parameter elements to remove from the domain"
-write_domain_file_from_state(new_state, dst_dom_file, dst_prob_file)
+write_domain_only_file_from_state(new_state, dst_templ_file, dst_dom_file)

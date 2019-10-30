@@ -95,11 +95,11 @@ class Problem:
         start_second_set = time.time()
         self.initialState = copy.copy(state)
         self.goalState = copy.copy(self.human_state)
-        node = BFSearch_mod(self)
-        print "Count >>>", node[1]
+        count = BFSearch_mod(self)
+        print "Count >>>", count
         print "Time for just second set search>>>", time.time() - start_second_set
         print "Total time>>>", time.time() - start_time
-        return node[-1] 
+        return count 
 
         #return list(((set(self.initialState) - set(self.human_state))| (set(self.human_state) - set(self.initialState)))
         #           - set(k_plan))

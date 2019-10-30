@@ -61,14 +61,14 @@ def main():
         if args.approx and args.heuristic:
             print "MCE doesn't support heuristic or approx"
             exit(1)
-        plan = pr_obj.LIESSearch()
-    explanation      = ''
-    for item in plan:
-        explanation += "Explanation >> {}\n".format(item)
+        count = pr_obj.LIESSearch()
+#    explanation      = ''
+#    for item in plan:
+#        explanation += "Explanation >> {}\n".format(item)
 
-    print explanation.strip()
-    with open('exp.dat', 'w') as explanation_file:
-        explanation_file.write(explanation.strip())
+#    print explanation.strip()
+#    with open('exp.dat', 'w') as explanation_file:
+#        explanation_file.write(explanation.strip())
 
 
 if __name__ == '__main__':

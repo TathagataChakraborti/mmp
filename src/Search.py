@@ -120,7 +120,7 @@ def BFSearch_mod(problem):
     total_count = 0
     print "Runnning BFS..."
     while not fringe.empty():
-        if numberOfNodesExpanded >= self.threshold:
+        if numberOfNodesExpanded >= problem.threshold:
             return total_count
 
         node = fringe.get()[1]

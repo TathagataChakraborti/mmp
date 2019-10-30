@@ -144,6 +144,6 @@ def BFSearch_mod(problem):
                 candidate_node     = successor_list.pop()
                 new_node           = [candidate_node[0], node[1] + [candidate_node[1]]]
 
-                fringe.put((problem.heuristic(candidate_node[0]) + len(new_node[2]), new_node))
+                fringe.put((problem.heuristic(candidate_node[0]) + len(new_node[1]), new_node))
     #print "curr", current_sol
     return total_count
